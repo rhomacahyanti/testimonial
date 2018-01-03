@@ -14,7 +14,7 @@
                 <h1>Welcome to the Testimonial Page</h1>
             </div>
             <div class="col-xs-12">
-                 <form class="form-horizontal" action="testimonial.php" action="post">
+                 <form class="form-horizontal" action="testimonial.php" method="post">
                   <div class="form-group">
                     <label class="control-label col-sm-2">Testimonial Title:</label>
                     <div class="col-sm-10">
@@ -52,16 +52,20 @@
     
     if ( !empty($_POST)){
         
-        
-        
-        $name = $_POST['name'];
         $title = $_POST['title'];
         $content = $_POST['content'];
         $rating = $_POST['rating'];
         $date = date('Y-m-d H:i:s');
+        
+        echo $title;
+        echo $content;
+        echo $rating;
+        echo $date;
+        
         echo '<pre>';
-        var_dump($name,$title,$content,$rating);
+        var_dump($title,$content,$rating);
         echo '</pre>';
+        
         $pdo = Database::connect();
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $sql = "INSERT INTO testimonial (testimonial_title, testimonial_content, testimonial_rating, testimonial_created_at) values(?, ?, ?, ?)";
