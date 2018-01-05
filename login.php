@@ -1,12 +1,8 @@
 <?php 
     session_start();
+    
     require_once 'facebook_auth.php';
     require 'connect.php';
-    
-    /*if (isset($_SESSION['access_token']));{
-        header('Location: index.php');
-        exit();
-    }*/
 
     $helper = $facebook->getRedirectLoginHelper();
     $redirectURL = "https://rhoma-riobahtiar.c9users.io/testimonial/callback.php";

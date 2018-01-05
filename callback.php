@@ -1,6 +1,6 @@
 <?php
     require_once 'facebook_auth.php';
-    require 'connect.php';
+    //require 'connect.php';
     require 'user.php';
     
     $helper = $facebook->getRedirectLoginHelper();
@@ -93,8 +93,6 @@
     
     header('Location:testimonial.php');
     exit();*/
-    
-    $_SESSION['userData'] = $userData;
 
     $name = $userData['name'];
     $email = $userData['email'];
@@ -106,17 +104,19 @@
     $userexist = "SELECT user_name FROM user WHERE user_name = ?";
     $checkuser = $pdo->prepare($userexist);
     $checkuser->execute(array($name));
-    $num_rows = $checkuser->fetchColumn();
+    $num_rows = $checkuser->rowCount();
     
     if ($num_rows == 0) { 		
       $query = "INSERT INTO user(user_name, user_email) VALUES(?, ?)";
       $q = $pdo->prepare($query);
-      $q->execute(array($userData['name'], $userData['email']));	
-  	} 
-  	else if ($num_rows == 1){  	
-      $query = "UPDATE user WHERE user_name = ?";
-      $q = $pdo->prepare($query);
       $q->execute(array($userData['name'], $userData['email']));
+      //die('not found');
+  	} 
+  	else if ($num_rows >= 1){  	
+      $query = "UPDATE user SET user_name= ?, user_email = ? WHERE user_name = ?";
+      $q = $pdo->prepare($query);
+      $q->execute(array($userData['name'], $userData['email'], $userData['name']));
+      //die('exist');
   	}
     	
     Database::disconnect();

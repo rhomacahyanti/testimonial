@@ -59,10 +59,15 @@
                     
                     //check user email
                     $user_email = $_SESSION['userData']['email'];
+                    //$user_email = 'rhoma.cahyanti@tokopedia.com';
                     $email_explode = explode('@', $user_email);
                     
                     $pdo = Database::connect();
                     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                    
+                    $sql = "SELECT user_id FROM user WHERE user_email = '".$user_email."'";
+                    $q = $pdo->query($sql);
+                    $userid = $q->fetchColumn();
                     
                     if (strpos($email_explode[1], 'tokopedia.com') !== false){
                         echo "<h3>Testimonials</h3>";
@@ -87,10 +92,10 @@
                         }
                     }
                     else {
-                        echo "<h3>Your previous testimonial</h3>";
+                        echo "<h3>Your testimonial</h3>";
                 
                          //get testimonial from user only
-                        $sql = 'SELECT * FROM testimonial WHERE user_id = 2';
+                        $sql = "SELECT * FROM testimonial WHERE user_id = '".$userid."'";
                         foreach ($pdo->query($sql) as $data) {
                                 
                             echo "<div class='col-xs-12'>";
@@ -136,9 +141,9 @@
         
         $pdo = Database::connect();
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "INSERT INTO testimonial (testimonial_title, testimonial_content, testimonial_rating, testimonial_created_at) values(?, ?, ?, ?)";
+        $sql = "INSERT INTO testimonial (testimonial_title, testimonial_content, testimonial_rating, user_id, testimonial_created_at) values(?, ?, ?, ?, ?)";
         $q = $pdo->prepare($sql);
-        $q->execute(array($title, $content, $rating, $date));
+        $q->execute(array($title, $content, $rating, $userid, $date));
         Database::disconnect();
         header("Location:testimonial.php");
     }
