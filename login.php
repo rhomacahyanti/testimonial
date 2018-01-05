@@ -1,10 +1,18 @@
 <?php 
-    require 'facebook.php';
+    session_start();
+    require_once 'facebook_auth.php';
+    require 'connect.php';
     
-    $facebook = new Facebook(array(
-        'appId' => '217389435472767',
-        'secret' => '702d1603ca4fb8bbf324452415d1aaf0'
-    ));
+    /*if (isset($_SESSION['access_token']));{
+        header('Location: index.php');
+        exit();
+    }*/
+
+    $helper = $facebook->getRedirectLoginHelper();
+    $redirectURL = "https://rhoma-riobahtiar.c9users.io/testimonial/callback.php";
+    $permission = ['email'];
+    $loginURL = $helper->getLoginUrl($redirectURL, $permission);
+
 ?>
 
 <!DOCTYPE html>
@@ -16,25 +24,41 @@
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     </head>
     <body>
-    <div class="container" style="margin-top: 200px">
+    <div class="container" style="margin-top: 100px">
         <div class="row justify-content-center">
             <div class="col-xs-6 col-md-offset-3" align="center">
                 <h1>Welcome to the Testimonial Page</h1>
+                <h3 style='margin-top: 50px'>Please log in before sending your testimonial</h3>
+                <a href="<?php echo $loginURL; ?>"><button class="btn btn-primary"> Log in with Facebook</button></a>
                 
-                <?php 
-                    if ($facebook->getUser() == 0){
-                        $login = $facebook->getLoginUrl(); 
-                    
-                        echo "<h3 style='margin-top: 150px'>Please log in before you send your testimonial</h3>";
-                        echo "<a href='$login'><button class='btn btn-primary'> Log in with Facebook</button></a>";
-                        /*<form>
-                            <input type="button" onclick="window.location'<?php echo $login; ?>'" value="Log in with facebook" class="btn btn-primary"/>
-                        </form>*/
-                    } 
-                    else 
-                        echo "<h3 style='margin-top: 150px'>Youre already log in with facebook</h3>";
+                
+            </div>
+        </div>
+        <div class="row" style="margin-top: 30px; ">
+            <div class="col-xs-12">
+                <?php
+                    //get testimonial
+                    $pdo = Database::connect();
+                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                    $sql = 'SELECT * FROM testimonial';
+                    foreach ($pdo->query($sql) as $data) {
+                            
+                        echo "<div class='col-xs-4'>";
+                        echo "<div class='card' style='width: 18rem;'>";
+                        echo "<div class='card-body'>";
+                        echo "<h3 class='card-title'>" . $data['testimonial_title'] . "</h3>";
+                        echo "<small class='card-subtitle mb-2 text-muted'>Posted at: " .  $data['testimonial_created_at'] . "</small><br>";
+                        echo "<small class='card-subtitle mb-2 text-muted'>Rating: " .  $data['testimonial_rating'] . "</small>";
+                        echo "<blockquote class='blockquote'><p class='card-text'>" . $data['testimonial_content'] . "</p></blockquote>";
+                        echo "</div>";
+                        echo "</div>";
+                        echo "</div>";
+                           
+                    }
+                   Database::disconnect();
                 ?>
             </div>
+            
         </div>
     </div>
     </body>
