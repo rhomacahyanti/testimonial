@@ -1,4 +1,5 @@
 <?php 
+    session_start();
     require 'connect.php';
     
     $id = $_GET['id'];
@@ -24,10 +25,23 @@
     <body>
          <div class="container" style="margin-top: 100px">
             <div class="col-xs-12">
-                <h1>Edit testimonial</h1>
+                
+                <?php 
+                    if (isset($_SESSION['user'])){
+                        if (time() - $_SESSION['last_time'] > 60){
+                            header("Location:logout.php");
+                        }    
+                    else {
+                        $_SESSION['last_time'] = time(); ?>
+                        <h1>Edit testimonial</h1>
+                        
+                    <?php } ?>
+                    
+                <?php } ?>
+                
             </div>
             <div class="col-xs-12">
-                 <form class="form-horizontal" action="testimonial.php" method="post">
+                 <form class="form-horizontal" method="post">
                   <div class="form-group">
                     <label class="control-label col-sm-2">Testimonial Title:</label>
                     <div class="col-sm-10">
@@ -66,30 +80,19 @@
         $title = $_POST['title'];
         $content = $_POST['content'];
         $rating = $_POST['rating'];
+        $created_at = $data['testimonial_created_at'];
         
-        echo $id;
+        
         $pdo = Database::connect();
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        //$sql = "UPDATE testimonial set testimonial_title = ?,  testimonial_content = ?, testimonial_rating = ? WHERE testimonial_id = ?";
-        //$q = $pdo->prepare($sql);
-        //$q->execute(array($title, $content, $rating, $id));
-        
-        $sql = "UPDATE testimonial_id SET 
-            testimonial_id = :id
-            testimonial_title = :title, 
-            testimonial_content = :content,
-            testimonial_rating = :rating 
-            WHERE testimonial_id = :oldid";
-    
+        $sql = "UPDATE testimonial SET testimonial_title = ?,  testimonial_content = ?, testimonial_rating = ?, testimonial_created_at = ? WHERE testimonial_id = ?";
         $q = $pdo->prepare($sql);
-        $results = $q->execute(array(
-                ":id" => $id,
-                ":title"    => $title,
-                ":content" => $content,
-                ":rating" => $rating,
-                ":id" => $_GET['id'],
-        ));
-        Database::disconnect();
+        $q->execute(array($title, $content, $rating, $created_at, $id));
+        
+        echo "Post ID = " . $id;
+        echo "<br>:";
+        echo "Edit Success";
+        
         header("Location:testimonial.php");
     }
 ?>

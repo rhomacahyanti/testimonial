@@ -21,8 +21,21 @@
         
         <div class="container" style="margin-top: 100px">
             <div class="col-xs-12">
-                <h1>Welcome, <?php echo $_SESSION['userData']['name']; ?></h1>
-                <h2>Write your testimonial here</h2>
+                
+                <?php 
+                    if (isset($_SESSION['user'])){
+                        if (time() - $_SESSION['last_time'] > 60){
+                            header("Location:logout.php");
+                        }    
+                    else {
+                        $_SESSION['last_time'] = time(); ?>
+                        <h1>Welcome, <?php echo $_SESSION['user']; ?></h1>
+                        <h2>Write your testimonial here</h2>
+                        
+                    <?php } ?>
+                    
+                <?php } ?>
+               
             </div>
             <div class="col-xs-12">
                  <form class="form-horizontal" action="testimonial.php" method="post">
@@ -56,9 +69,8 @@
         <div class="container" style="margin-top: 60px">
             <div class="col-xs-12">
                 <?php
-                    
                     //check user email
-                    $user_email = $_SESSION['userData']['email'];
+                    $user_email = $_SESSION['email'];
                     //$user_email = 'rhoma.cahyanti@tokopedia.com';
                     $email_explode = explode('@', $user_email);
                     
@@ -68,6 +80,10 @@
                     $sql = "SELECT user_id FROM user WHERE user_email = '".$user_email."'";
                     $q = $pdo->query($sql);
                     $userid = $q->fetchColumn();
+                    
+                    //echo "User email = " . $user_email;
+                    //echo "<br>";
+                    //echo "User id = " . $userid;
                     
                     if (strpos($email_explode[1], 'tokopedia.com') !== false){
                         echo "<h3>Testimonials</h3>";
@@ -130,14 +146,14 @@
         $rating = $_POST['rating'];
         $date = date('Y-m-d H:i:s');
         
-        echo $title;
+        /*echo $title;
         echo $content;
         echo $rating;
         echo $date;
         
         echo '<pre>';
         var_dump($title,$content,$rating);
-        echo '</pre>';
+        echo '</pre>';*/
         
         $pdo = Database::connect();
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

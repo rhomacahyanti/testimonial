@@ -1,4 +1,5 @@
 <?php 
+    session_start();
     require 'connect.php';
     
     $id = 0;
@@ -33,7 +34,20 @@
     <body>
          <div class="container" style="margin-top: 100px">
             <div class="col-xs-12">
-                <h1>Delete testimonial?</h1>
+                
+                <?php 
+                    if (isset($_SESSION['user'])){
+                        if (time() - $_SESSION['last_time'] > 60){
+                            header("Location:logout.php");
+                        }    
+                    else {
+                        $_SESSION['last_time'] = time(); ?>
+                        <h1>Delete testimonial?</h1>
+                        
+                    <?php } ?>
+                    
+                <?php } ?>
+                
             </div>
             <div class="col-xs-12">
                 <script type="text/javascript">

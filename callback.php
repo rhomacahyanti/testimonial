@@ -93,7 +93,11 @@
     
     header('Location:testimonial.php');
     exit();*/
-
+    
+    $_SESSION['user'] = $userData['name'];
+    $_SESSION['email'] = $userData['email'];
+    $_SESSION['last_time'] = time();
+    
     $name = $userData['name'];
     $email = $userData['email'];
     
